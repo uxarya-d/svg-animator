@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -39,4 +40,29 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Resizable panels styling */
+.resizable-handle-horizontal {
+  width: 4px;
+  background-color: #f1f1f1;
+  cursor: col-resize;
+}
+
+.resizable-handle-vertical {
+  height: 4px;
+  background-color: #f1f1f1;
+  cursor: row-resize;
+}
+
+.resizable-handle:hover {
+  background-color: #e0e0e0;
+}
+
+/* Fix panel layout bugs */
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
 }

@@ -8,6 +8,7 @@ import Canvas from '../components/Canvas';
 import PropertiesPanel from '../components/PropertiesPanel';
 import Timeline from '../components/Timeline';
 import { useAnimation } from '../context/AnimationContext';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 
 // Wrap application content to access the animation context
 const AnimationApp = () => {
@@ -20,26 +21,34 @@ const AnimationApp = () => {
       {!svgContent ? (
         <SVGUpload />
       ) : (
-        <>
-          <div className="grid grid-cols-12 gap-4 h-[calc(100vh-200px)]">
-            {/* Layers Panel */}
-            <div className="col-span-3 h-full">
-              <LayersPanel />
-            </div>
+        <div className="flex flex-col h-[calc(100vh-120px)]">
+          <ResizablePanelGroup direction="vertical" className="min-h-0 flex-grow">
+            <ResizablePanel defaultSize={80} minSize={30}>
+              <div className="grid grid-cols-12 gap-4 h-full">
+                {/* Layers Panel */}
+                <div className="col-span-3 h-full">
+                  <LayersPanel />
+                </div>
+                
+                {/* Canvas */}
+                <div className="col-span-6 h-full">
+                  <Canvas />
+                </div>
+                
+                {/* Properties Panel */}
+                <div className="col-span-3 h-full">
+                  <PropertiesPanel />
+                </div>
+              </div>
+            </ResizablePanel>
             
-            {/* Canvas */}
-            <div className="col-span-6 h-full">
-              <Canvas />
-            </div>
+            <ResizableHandle withHandle />
             
-            {/* Properties Panel */}
-            <div className="col-span-3 h-full">
-              <PropertiesPanel />
-            </div>
-          </div>
-          
-          <Timeline />
-        </>
+            <ResizablePanel defaultSize={20} minSize={10}>
+              <Timeline />
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
       )}
     </div>
   );

@@ -84,7 +84,7 @@ const Timeline = () => {
   };
   
   return (
-    <div className="animation-panel rounded-lg mt-4 p-3">
+    <div className="animation-panel rounded-lg p-3 h-full flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Button
@@ -116,8 +116,8 @@ const Timeline = () => {
         </div>
       </div>
       
-      <div className="relative pb-8 pt-2" ref={timelineRef}>
-        <div className="relative h-8">
+      <div className="relative flex-grow flex flex-col overflow-hidden" ref={timelineRef}>
+        <div className="relative h-8 min-h-8">
           {renderTicks()}
           {selectedLayerId && renderKeyframes()}
         </div>
@@ -130,6 +130,8 @@ const Timeline = () => {
           onValueChange={handleTimeChange}
           className="mt-2"
         />
+        
+        <div className="flex-grow"></div>
       </div>
     </div>
   );
