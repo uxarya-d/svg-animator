@@ -8,6 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Settings, Plus } from 'lucide-react';
 import { animatableProperties, defaultProperties } from '../utils/animationUtils';
 import { toast } from 'sonner';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const PropertiesPanel = () => {
   const {
@@ -122,40 +123,42 @@ const PropertiesPanel = () => {
         <h3 className="text-sm font-medium">Properties</h3>
       </div>
       
-      <div className="flex-1 overflow-auto p-3">
-        {selectedLayerId ? (
-          <div className="space-y-4">
-            <div className="bg-gray-50 p-2 rounded border border-gray-100">
-              <p className="text-xs font-medium mb-1">Selected Layer</p>
-              <p className="text-sm">{selectedLayer?.name}</p>
+      <ScrollArea className="flex-1 h-full">
+        <div className="p-3">
+          {selectedLayerId ? (
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-2 rounded border border-gray-100">
+                <p className="text-xs font-medium mb-1">Selected Layer</p>
+                <p className="text-sm">{selectedLayer?.name}</p>
+              </div>
+              
+              <div className="space-y-3">
+                {animatableProperties.map((property) => (
+                  <div key={property.id} className="space-y-1.5">
+                    <Label className="text-xs font-medium">{property.label}</Label>
+                    {renderPropertyInput(property)}
+                  </div>
+                ))}
+              </div>
+              
+              <Button 
+                onClick={handleAddKeyframe} 
+                size="sm" 
+                className="w-full mt-4 gap-1"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Add Keyframe at Current Time
+              </Button>
             </div>
-            
-            <div className="space-y-3">
-              {animatableProperties.map((property) => (
-                <div key={property.id} className="space-y-1.5">
-                  <Label className="text-xs font-medium">{property.label}</Label>
-                  {renderPropertyInput(property)}
-                </div>
-              ))}
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              <Settings className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No layer selected</p>
+              <p className="text-xs">Select a layer to edit properties</p>
             </div>
-            
-            <Button 
-              onClick={handleAddKeyframe} 
-              size="sm" 
-              className="w-full mt-4 gap-1"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Add Keyframe at Current Time
-            </Button>
-          </div>
-        ) : (
-          <div className="text-center py-8 text-gray-400">
-            <Settings className="h-10 w-10 mx-auto mb-2 opacity-30" />
-            <p className="text-sm">No layer selected</p>
-            <p className="text-xs">Select a layer to edit properties</p>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 };

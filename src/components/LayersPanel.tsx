@@ -4,6 +4,7 @@ import { useAnimation, SVGLayer } from '../context/AnimationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Layers, Code, Folder, FolderOpen, Edit, Eye, EyeOff, ChevronRight, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -180,38 +181,40 @@ const LayersPanel = () => {
             </TabsTrigger>
           </TabsList>
           
-          <div className="flex-1 overflow-auto p-2">
-            <TabsContent value="layers" className="mt-0">
-              {svgLayers.length > 0 ? (
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-medium">Layers</h3>
-                    {selectedLayers.length >= 2 && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={handleGroupLayers}
-                        className="h-7 px-2 text-xs"
-                      >
-                        <Folder className="h-3.5 w-3.5 mr-1" />
-                        Group
-                      </Button>
-                    )}
+          <div className="flex-1 overflow-hidden">
+            <TabsContent value="layers" className="mt-2 h-[calc(100vh-220px)]">
+              <ScrollArea className="h-full pr-2">
+                {svgLayers.length > 0 ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium">Layers</h3>
+                      {selectedLayers.length >= 2 && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={handleGroupLayers}
+                          className="h-7 px-2 text-xs"
+                        >
+                          <Folder className="h-3.5 w-3.5 mr-1" />
+                          Group
+                        </Button>
+                      )}
+                    </div>
+                    {svgLayers.map(layer => renderLayer(layer))}
                   </div>
-                  {svgLayers.map(layer => renderLayer(layer))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-400">
-                  <Layers className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                  <p className="text-sm">No layers available</p>
-                  <p className="text-xs">Upload an SVG to see layers</p>
-                </div>
-              )}
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    <Layers className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No layers available</p>
+                    <p className="text-xs">Upload an SVG to see layers</p>
+                  </div>
+                )}
+              </ScrollArea>
             </TabsContent>
             
-            <TabsContent value="code" className="mt-0">
-              <div className="relative">
-                <pre className="text-xs overflow-auto bg-gray-50 p-2 rounded border border-gray-100 h-[calc(100vh-250px)]">
+            <TabsContent value="code" className="mt-2 h-[calc(100vh-220px)]">
+              <ScrollArea className="h-full">
+                <pre className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
                   {svgContent ? (
                     <code className="language-markup whitespace-pre-wrap">{svgContent}</code>
                   ) : (
@@ -221,7 +224,7 @@ const LayersPanel = () => {
                     </div>
                   )}
                 </pre>
-              </div>
+              </ScrollArea>
             </TabsContent>
           </div>
         </Tabs>
