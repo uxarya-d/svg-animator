@@ -65,4 +65,14 @@
   flex-direction: column;
   min-height: 0;
   flex: 1;
+  overflow: hidden; /* Ensure content doesn't overflow */
+}
+
+/* Add explicit height for scroll containers */
+.animation-panel {
+  @apply bg-white/90 shadow-panel border border-gray-100;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }

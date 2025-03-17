@@ -117,13 +117,13 @@ const PropertiesPanel = () => {
   };
   
   return (
-    <div className="animation-panel rounded-lg flex flex-col h-full">
-      <div className="p-3 border-b border-gray-100 flex items-center">
+    <div className="animation-panel h-full flex flex-col overflow-hidden">
+      <div className="p-3 border-b border-gray-100 flex items-center shrink-0">
         <Settings className="h-4 w-4 mr-2 text-gray-500" />
         <h3 className="text-sm font-medium">Properties</h3>
       </div>
       
-      <ScrollArea className="flex-1 h-full">
+      <ScrollArea className="flex-1">
         <div className="p-3">
           {selectedLayerId ? (
             <div className="space-y-4">
