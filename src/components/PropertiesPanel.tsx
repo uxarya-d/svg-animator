@@ -75,6 +75,9 @@ const PropertiesPanel = () => {
         );
         
       case 'number':
+        // Convert to number to ensure we always pass a number to the Slider
+        const numericValue = typeof value === 'string' ? parseFloat(value) || 0 : value ?? 0;
+        
         return (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -91,7 +94,7 @@ const PropertiesPanel = () => {
               <span className="text-xs text-gray-500">{property.max}</span>
             </div>
             <Slider
-              value={[value ?? 0]}
+              value={[numericValue]}
               min={property.min}
               max={property.max}
               step={property.step}
