@@ -15,7 +15,7 @@ const AnimationApp = () => {
   const { svgContent } = useAnimation();
   
   return (
-    <div className="container mx-auto p-4 max-w-screen-xl">
+    <div className="w-full px-4">
       <Header />
       
       {!svgContent ? (
@@ -58,7 +58,7 @@ const AnimationApp = () => {
 const Index = () => {
   return (
     <AnimationProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 w-full">
         <AnimationApp />
       </div>
     </AnimationProvider>
