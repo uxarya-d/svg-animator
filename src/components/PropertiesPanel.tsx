@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAnimation } from '../context/AnimationContext';
 import { Button } from '@/components/ui/button';
@@ -21,10 +20,8 @@ const PropertiesPanel = () => {
   
   const [properties, setProperties] = useState(defaultProperties);
   
-  // Find the selected layer
   const selectedLayer = svgLayers.find(layer => layer.id === selectedLayerId);
   
-  // Update local properties when selected layer changes
   useEffect(() => {
     if (selectedLayer) {
       setProperties({ ...defaultProperties, ...selectedLayer.properties });
@@ -33,18 +30,15 @@ const PropertiesPanel = () => {
     }
   }, [selectedLayer]);
   
-  // Handle property change
   const handlePropertyChange = (property: string, value: any) => {
     const updatedProperties = { ...properties, [property]: value };
     setProperties(updatedProperties);
     
-    // Update the layer properties
     if (selectedLayerId) {
       updateLayer(selectedLayerId, { properties: updatedProperties });
     }
   };
   
-  // Add a keyframe at the current time
   const handleAddKeyframe = () => {
     if (!selectedLayerId) return;
     
@@ -52,7 +46,6 @@ const PropertiesPanel = () => {
     toast.success('Keyframe added');
   };
   
-  // Render a property input based on its type
   const renderPropertyInput = (property: any) => {
     const value = properties[property.id] ?? defaultProperties[property.id as keyof typeof defaultProperties];
     
@@ -76,7 +69,6 @@ const PropertiesPanel = () => {
         );
         
       case 'number':
-        // Convert to number to ensure we always pass a number to the Slider
         const numericValue = typeof value === 'string' ? parseFloat(value) || 0 : value ?? 0;
         
         return (

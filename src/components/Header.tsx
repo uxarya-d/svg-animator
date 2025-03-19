@@ -49,7 +49,7 @@ const Header = () => {
   };
 
   return (
-    <header className="animation-panel flex items-center justify-between p-3 rounded-lg mb-4">
+    <header className="animation-panel flex items-center justify-between p-3 mb-0 h-16">
       <div className="flex items-center">
         <div className="flex flex-col">
           <h1 className="text-xl font-medium tracking-tight text-gray-900">SVG Animator</h1>

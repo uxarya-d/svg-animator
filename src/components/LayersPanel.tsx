@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useAnimation, SVGLayer } from '../context/AnimationContext';
 import { Button } from '@/components/ui/button';
@@ -38,14 +37,12 @@ const LayersPanel = () => {
   
   const handleLayerClick = (layerId: string, event: React.MouseEvent) => {
     if (event.shiftKey) {
-      // Multi-select with shift key
       if (selectedLayers.includes(layerId)) {
         setSelectedLayers(selectedLayers.filter(id => id !== layerId));
       } else {
         setSelectedLayers([...selectedLayers, layerId]);
       }
     } else {
-      // Single select
       setSelectedLayerId(layerId);
       setSelectedLayers(layerId ? [layerId] : []);
     }
@@ -167,8 +164,8 @@ const LayersPanel = () => {
   };
   
   return (
-    <div className="animation-panel rounded-lg flex flex-col h-full">
-      <div className="p-2 border-b border-gray-100">
+    <div className="animation-panel h-full flex flex-col overflow-hidden">
+      <div className="p-2 border-b border-gray-100 shrink-0">
         <Tabs defaultValue={viewMode} onValueChange={(value) => setViewMode(value as 'layers' | 'code')} className="w-full">
           <TabsList className="w-full grid grid-cols-2">
             <TabsTrigger value="layers" className="flex items-center gap-1">
@@ -180,54 +177,58 @@ const LayersPanel = () => {
               <span>Code</span>
             </TabsTrigger>
           </TabsList>
-          
-          <div className="flex-1 overflow-hidden">
-            <TabsContent value="layers" className="mt-2 h-[calc(100vh-220px)]">
-              <ScrollArea className="h-full pr-2">
-                {svgLayers.length > 0 ? (
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium">Layers</h3>
-                      {selectedLayers.length >= 2 && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={handleGroupLayers}
-                          className="h-7 px-2 text-xs"
-                        >
-                          <Folder className="h-3.5 w-3.5 mr-1" />
-                          Group
-                        </Button>
-                      )}
-                    </div>
-                    {svgLayers.map(layer => renderLayer(layer))}
+        </Tabs>
+      </div>
+      
+      <div className="flex-1 overflow-hidden">
+        <TabsContent value="layers" className="h-full m-0 p-0">
+          <ScrollArea className="h-full">
+            <div className="p-3">
+              {svgLayers.length > 0 ? (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium">Layers</h3>
+                    {selectedLayers.length >= 2 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleGroupLayers}
+                        className="h-7 px-2 text-xs"
+                      >
+                        <Folder className="h-3.5 w-3.5 mr-1" />
+                        Group
+                      </Button>
+                    )}
                   </div>
+                  {svgLayers.map(layer => renderLayer(layer))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <Layers className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No layers available</p>
+                  <p className="text-xs">Upload an SVG to see layers</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </TabsContent>
+        
+        <TabsContent value="code" className="h-full m-0 p-0">
+          <ScrollArea className="h-full">
+            <div className="p-3">
+              <pre className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
+                {svgContent ? (
+                  <code className="language-markup whitespace-pre-wrap">{svgContent}</code>
                 ) : (
                   <div className="text-center py-8 text-gray-400">
-                    <Layers className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">No layers available</p>
-                    <p className="text-xs">Upload an SVG to see layers</p>
+                    <Code className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No SVG loaded</p>
                   </div>
                 )}
-              </ScrollArea>
-            </TabsContent>
-            
-            <TabsContent value="code" className="mt-2 h-[calc(100vh-220px)]">
-              <ScrollArea className="h-full">
-                <pre className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
-                  {svgContent ? (
-                    <code className="language-markup whitespace-pre-wrap">{svgContent}</code>
-                  ) : (
-                    <div className="text-center py-8 text-gray-400">
-                      <Code className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                      <p className="text-sm">No SVG loaded</p>
-                    </div>
-                  )}
-                </pre>
-              </ScrollArea>
-            </TabsContent>
-          </div>
-        </Tabs>
+              </pre>
+            </div>
+          </ScrollArea>
+        </TabsContent>
       </div>
     </div>
   );

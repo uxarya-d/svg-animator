@@ -15,31 +15,35 @@ const AnimationApp = () => {
   const { svgContent } = useAnimation();
   
   return (
-    <div className="w-full px-4">
+    <div className="w-full">
       <Header />
       
       {!svgContent ? (
         <SVGUpload />
       ) : (
-        <div className="flex flex-col h-[calc(100vh-120px)]">
-          <ResizablePanelGroup direction="vertical" className="min-h-0 flex-grow">
+        <div className="flex flex-col h-screen">
+          <ResizablePanelGroup direction="vertical" className="h-[calc(100vh-64px)]">
             <ResizablePanel defaultSize={80} minSize={30}>
-              <div className="grid grid-cols-12 gap-4 h-full">
+              <ResizablePanelGroup direction="horizontal" className="h-full">
                 {/* Layers Panel */}
-                <div className="col-span-3 h-full">
+                <ResizablePanel defaultSize={20} minSize={200} maxSize={400}>
                   <LayersPanel />
-                </div>
+                </ResizablePanel>
+                
+                <ResizableHandle withHandle />
                 
                 {/* Canvas */}
-                <div className="col-span-6 h-full">
+                <ResizablePanel defaultSize={60}>
                   <Canvas />
-                </div>
+                </ResizablePanel>
+                
+                <ResizableHandle withHandle />
                 
                 {/* Properties Panel */}
-                <div className="col-span-3 h-full">
+                <ResizablePanel defaultSize={20} minSize={200} maxSize={400}>
                   <PropertiesPanel />
-                </div>
-              </div>
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </ResizablePanel>
             
             <ResizableHandle withHandle />
@@ -58,7 +62,7 @@ const AnimationApp = () => {
 const Index = () => {
   return (
     <AnimationProvider>
-      <div className="min-h-screen bg-gray-50 w-full">
+      <div className="h-screen bg-gray-50 w-full overflow-hidden">
         <AnimationApp />
       </div>
     </AnimationProvider>
