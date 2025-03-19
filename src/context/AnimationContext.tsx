@@ -319,9 +319,9 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
     
-    let styleElement = svgDoc.querySelector('style');
+    let styleElement = svgDoc.querySelector('style') as SVGStyleElement | null;
     if (!styleElement) {
-      styleElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'style');
+      styleElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'style') as SVGStyleElement;
       svgDoc.documentElement.insertBefore(styleElement, svgDoc.documentElement.firstChild);
     }
     
