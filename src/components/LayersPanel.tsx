@@ -111,7 +111,7 @@ const LayersPanel = () => {
     return (
       <div key={layer.id} className="select-none">
         <div
-          className={`layer-item flex items-center py-1.5 px-2 rounded-md ${
+          className={`layer-item flex items-center py-1.5 px-2 ${
             isSelected ? 'bg-primary/10 border-primary/30' : ''
           }`}
           style={{ marginLeft: `${depth * 12}px` }}
@@ -164,10 +164,9 @@ const LayersPanel = () => {
     );
   };
 
-  // The key fix is here - we need to ensure the Tabs component properly wraps TabsContent
   return (
-    <div className="animation-panel h-full flex flex-col overflow-hidden">
-      <Tabs defaultValue={viewMode} onValueChange={(value) => setViewMode(value as 'layers' | 'code')} className="w-full">
+    <div className="animation-panel h-full flex flex-col" data-panel="layers">
+      <Tabs defaultValue={viewMode} onValueChange={(value) => setViewMode(value as 'layers' | 'code')} className="w-full h-full flex flex-col">
         <div className="p-2 border-b border-gray-100 shrink-0">
           <TabsList className="w-full grid grid-cols-2">
             <TabsTrigger value="layers" className="flex items-center gap-1">
@@ -181,56 +180,54 @@ const LayersPanel = () => {
           </TabsList>
         </div>
       
-        <div className="flex-1 overflow-hidden">
-          <TabsContent value="layers" className="h-full m-0 p-0">
-            <ScrollArea className="h-full">
-              <div className="p-3">
-                {svgLayers.length > 0 ? (
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium">Layers</h3>
-                      {selectedLayers.length >= 2 && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={handleGroupLayers}
-                          className="h-7 px-2 text-xs"
-                        >
-                          <Folder className="h-3.5 w-3.5 mr-1" />
-                          Group
-                        </Button>
-                      )}
-                    </div>
-                    {svgLayers.map(layer => renderLayer(layer))}
+        <TabsContent value="layers" className="flex-1 overflow-hidden p-0 m-0">
+          <ScrollArea className="h-full">
+            <div className="p-3">
+              {svgLayers.length > 0 ? (
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium">Layers</h3>
+                    {selectedLayers.length >= 2 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleGroupLayers}
+                        className="h-7 px-2 text-xs"
+                      >
+                        <Folder className="h-3.5 w-3.5 mr-1" />
+                        Group
+                      </Button>
+                    )}
                   </div>
+                  {svgLayers.map(layer => renderLayer(layer))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <Layers className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No layers available</p>
+                  <p className="text-xs">Upload an SVG to see layers</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </TabsContent>
+        
+        <TabsContent value="code" className="flex-1 overflow-hidden p-0 m-0">
+          <ScrollArea className="h-full">
+            <div className="p-3">
+              <pre className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
+                {svgContent ? (
+                  <code className="language-markup whitespace-pre-wrap">{svgContent}</code>
                 ) : (
                   <div className="text-center py-8 text-gray-400">
-                    <Layers className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                    <p className="text-sm">No layers available</p>
-                    <p className="text-xs">Upload an SVG to see layers</p>
+                    <Code className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No SVG loaded</p>
                   </div>
                 )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-          
-          <TabsContent value="code" className="h-full m-0 p-0">
-            <ScrollArea className="h-full">
-              <div className="p-3">
-                <pre className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
-                  {svgContent ? (
-                    <code className="language-markup whitespace-pre-wrap">{svgContent}</code>
-                  ) : (
-                    <div className="text-center py-8 text-gray-400">
-                      <Code className="h-10 w-10 mx-auto mb-2 opacity-30" />
-                      <p className="text-sm">No SVG loaded</p>
-                    </div>
-                  )}
-                </pre>
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        </div>
+              </pre>
+            </div>
+          </ScrollArea>
+        </TabsContent>
       </Tabs>
     </div>
   );

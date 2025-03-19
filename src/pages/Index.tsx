@@ -21,26 +21,26 @@ const AnimationApp = () => {
       {!svgContent ? (
         <SVGUpload />
       ) : (
-        <div className="flex flex-col h-screen">
-          <ResizablePanelGroup direction="vertical" className="h-[calc(100vh-64px)]">
+        <div className="flex flex-col h-[calc(100vh-64px)]">
+          <ResizablePanelGroup direction="vertical" className="h-full">
             <ResizablePanel defaultSize={80} minSize={30}>
               <ResizablePanelGroup direction="horizontal" className="h-full">
                 {/* Layers Panel */}
-                <ResizablePanel defaultSize={20} minSize={200} maxSize={400}>
+                <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
                   <LayersPanel />
                 </ResizablePanel>
                 
                 <ResizableHandle withHandle />
                 
                 {/* Canvas */}
-                <ResizablePanel defaultSize={60}>
+                <ResizablePanel defaultSize={60} minSize={40}>
                   <Canvas />
                 </ResizablePanel>
                 
                 <ResizableHandle withHandle />
                 
                 {/* Properties Panel */}
-                <ResizablePanel defaultSize={20} minSize={200} maxSize={400}>
+                <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
                   <PropertiesPanel />
                 </ResizablePanel>
               </ResizablePanelGroup>
@@ -62,7 +62,7 @@ const AnimationApp = () => {
 const Index = () => {
   return (
     <AnimationProvider>
-      <div className="h-screen bg-gray-50 w-full overflow-hidden">
+      <div className="h-screen w-full overflow-hidden">
         <AnimationApp />
       </div>
     </AnimationProvider>

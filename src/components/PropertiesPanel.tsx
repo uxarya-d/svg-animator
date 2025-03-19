@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAnimation } from '../context/AnimationContext';
 import { Button } from '@/components/ui/button';
@@ -109,7 +110,7 @@ const PropertiesPanel = () => {
   };
   
   return (
-    <div className="animation-panel h-full flex flex-col overflow-hidden">
+    <div className="animation-panel h-full flex flex-col" data-panel="properties">
       <div className="p-3 border-b border-gray-100 flex items-center shrink-0">
         <Settings className="h-4 w-4 mr-2 text-gray-500" />
         <h3 className="text-sm font-medium">Properties</h3>

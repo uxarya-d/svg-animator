@@ -72,11 +72,11 @@ const Canvas = () => {
   };
   
   return (
-    <div className="animation-panel rounded-lg flex items-center justify-center relative overflow-hidden h-full">
+    <div className="animation-panel h-full flex items-center justify-center relative overflow-hidden">
       {renderGrid()}
       
       {!svgContent && (
-        <div className="text-center p-4 bg-white/50 rounded-lg max-w-xs absolute">
+        <div className="text-center p-4 bg-white/50 max-w-xs absolute">
           <p className="text-lg font-medium mb-2">Canvas</p>
           <p className="text-sm text-gray-500">
             Upload an SVG file to see the preview here
@@ -86,7 +86,8 @@ const Canvas = () => {
       
       <div 
         ref={svgContainerRef} 
-        className="flex items-center justify-center w-full h-full p-4 overflow-auto"
+        className="flex items-center justify-center w-full h-full p-4"
+        style={{ overflowY: 'auto', overflowX: 'auto' }}
       />
     </div>
   );
