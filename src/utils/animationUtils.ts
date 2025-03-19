@@ -21,10 +21,40 @@ export const generateKeyframeCSS = (
     
     // Add properties
     Object.entries(keyframe.properties).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value === undefined) return;
+      
+      // Special handling for transform properties
+      if (key === 'translateX' || key === 'translateY' || key === 'rotate' || key === 'scale') {
+        // If this is the first transform property, initialize the transform string
+        if (!css.includes('    transform:')) {
+          css += '    transform: ';
+        } else {
+          // Remove the last semicolon and newline to continue the transform
+          css = css.substring(0, css.lastIndexOf(';')) + ' ';
+        }
+        
+        // Add the appropriate transform function
+        switch (key) {
+          case 'translateX':
+            css += `translateX(${value}px) `;
+            break;
+          case 'translateY':
+            css += `translateY(${value}px) `;
+            break;
+          case 'rotate':
+            css += `rotate(${value}deg) `;
+            break;
+          case 'scale':
+            css += `scale(${value}) `;
+            break;
+        }
+        
+        // Add semicolon and newline
+        css += ';\n';
+      } else {
         // Convert camelCase to kebab-case for CSS
         const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-        css += `    ${cssKey}: ${value};\n`;
+        css += `    ${cssKey}: ${propertyToCSS(key, value)};\n`;
       }
     });
     
@@ -46,6 +76,12 @@ export const propertyToCSS = (property: string, value: any): string => {
       return `${value}px`;
     case 'rotate':
       return `${value}deg`;
+    case 'fill':
+    case 'stroke':
+      // Return color values as is
+      return value.toString();
+    case 'strokeWidth':
+      return `${value}px`;
     default:
       return value.toString();
   }

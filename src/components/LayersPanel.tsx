@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useAnimation, SVGLayer } from '../context/AnimationContext';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,8 @@ const LayersPanel = () => {
     renameLayer,
     groupLayers,
     ungroupLayers,
-    svgContent
+    svgContent,
+    generateAnimatedSVG
   } = useAnimation();
   
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
@@ -35,6 +35,13 @@ const LayersPanel = () => {
       editInputRef.current.focus();
     }
   }, [editingLayerId]);
+  
+  const getAnimatedSvgCode = () => {
+    if (!svgContent) return '';
+    if (svgLayers.length === 0) return svgContent;
+    
+    return generateAnimatedSVG();
+  };
   
   const handleLayerClick = (layerId: string, event: React.MouseEvent) => {
     if (event.shiftKey) {
@@ -217,7 +224,7 @@ const LayersPanel = () => {
             <div className="p-3">
               <pre className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
                 {svgContent ? (
-                  <code className="language-markup whitespace-pre-wrap">{svgContent}</code>
+                  <code className="language-markup whitespace-pre-wrap">{getAnimatedSvgCode()}</code>
                 ) : (
                   <div className="text-center py-8 text-gray-400">
                     <Code className="h-10 w-10 mx-auto mb-2 opacity-30" />

@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useAnimation } from '../context/AnimationContext';
 import { applySVGStyles } from '../utils/svgParser';
 
@@ -10,11 +10,21 @@ const Canvas = () => {
     timeline,
     selectedLayerId,
     highlightedLayerId,
-    svgFile
+    svgFile,
+    generateAnimatedSVG
   } = useAnimation();
   
   const svgContainerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [animatedSvgContent, setAnimatedSvgContent] = useState<string>('');
+  
+  // Update animated SVG when layers, timeline, or editing state changes
+  useEffect(() => {
+    if (svgContent && svgLayers.length > 0) {
+      const animated = generateAnimatedSVG();
+      setAnimatedSvgContent(animated);
+    }
+  }, [svgLayers, timeline.currentTime, selectedLayerId, highlightedLayerId, svgContent]);
   
   // Initialize SVG content
   useEffect(() => {
@@ -23,8 +33,11 @@ const Canvas = () => {
     // Clear previous content
     svgContainerRef.current.innerHTML = '';
     
+    // If we have animated content, use that instead of the original
+    const contentToUse = animatedSvgContent || svgContent;
+    
     // Set the new content
-    svgContainerRef.current.innerHTML = svgContent;
+    svgContainerRef.current.innerHTML = contentToUse;
     
     // Get the reference to the SVG element
     svgRef.current = svgContainerRef.current.querySelector('svg');
@@ -46,14 +59,7 @@ const Canvas = () => {
         svgRef.current.setAttribute('viewBox', `0 0 ${width} ${height}`);
       }
     }
-  }, [svgContent]);
-  
-  // Apply animation styles based on the timeline
-  useEffect(() => {
-    if (!svgRef.current || !svgLayers.length) return;
-    
-    applySVGStyles(svgRef.current, svgLayers, timeline.currentTime);
-  }, [svgLayers, timeline.currentTime, selectedLayerId, highlightedLayerId]);
+  }, [svgContent, animatedSvgContent]);
   
   // Render a grid background for the canvas
   const renderGrid = () => {

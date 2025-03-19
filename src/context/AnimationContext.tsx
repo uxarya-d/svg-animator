@@ -1,6 +1,6 @@
-
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { parsePathElements } from '../utils/svgParser';
+import { generateKeyframeCSS, getClassName } from '../utils/animationUtils';
 
 export type SVGLayer = {
   id: string;
@@ -82,7 +82,6 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
   const [viewMode, setViewMode] = useState<'layers' | 'code'>('layers');
   const [svgFile, setSvgFile] = useState<File | null>(null);
 
-  // Update selected layer in layers array
   useEffect(() => {
     if (svgLayers.length > 0) {
       const updatedLayers = svgLayers.map(layer => {
@@ -104,7 +103,6 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [selectedLayerId]);
 
-  // Update highlighted layer in layers array
   useEffect(() => {
     if (svgLayers.length > 0) {
       const updatedLayers = svgLayers.map(layer => {
@@ -126,7 +124,6 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [highlightedLayerId]);
 
-  // Animation playback timer
   useEffect(() => {
     let animationFrame: number;
     
@@ -135,7 +132,6 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
         setTimeline(prev => {
           const newTime = prev.currentTime + 16.67; // Roughly 60fps
           
-          // Loop back to start if we reach the end
           if (newTime >= prev.duration) {
             return { ...prev, currentTime: 0 };
           }
@@ -191,7 +187,6 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
             properties
           };
           
-          // Sort keyframes by time
           const updatedKeyframes = [...layer.keyframes, newKeyframe]
             .sort((a, b) => a.time - b.time);
           
@@ -253,10 +248,8 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const groupLayers = (layerIds: string[], groupName: string) => {
-    // Create new group
     const groupId = `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // Find layers to be grouped
     const layersToGroup: SVGLayer[] = [];
     const remainingLayers: SVGLayer[] = [];
     
@@ -268,7 +261,6 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
       }
     });
     
-    // Create new group layer
     const newGroup: SVGLayer = {
       id: groupId,
       name: groupName,
@@ -281,20 +273,17 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
       isHighlighted: false
     };
     
-    // Add new group to layers
     setSvgLayers([...remainingLayers, newGroup]);
   };
 
   const ungroupLayers = (groupId: string) => {
     setSvgLayers(prevLayers => {
-      // Find the group to ungroup
       const group = prevLayers.find(layer => layer.id === groupId);
       
       if (!group || !group.children) {
         return prevLayers;
       }
       
-      // Remove the group and add its children to the top level
       const updatedLayers = prevLayers
         .filter(layer => layer.id !== groupId)
         .concat(group.children);
@@ -327,101 +316,67 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const generateAnimatedSVG = () => {
-    // This is a simplified implementation - a real solution would generate
-    // CSS keyframes based on the animation data
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
     
-    // Apply classes to all layers
-    const applyClasses = (layers: SVGLayer[]) => {
+    let styleElement = svgDoc.querySelector('style');
+    if (!styleElement) {
+      styleElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'style');
+      svgDoc.documentElement.insertBefore(styleElement, svgDoc.documentElement.firstChild);
+    }
+    
+    let cssString = '';
+    
+    const processLayers = (layers: SVGLayer[]) => {
       layers.forEach(layer => {
-        if (layer.type === 'group') {
-          // Find or create a g element
-          let groupElement = svgDoc.querySelector(`g#${layer.id}`);
-          
-          if (!groupElement) {
-            groupElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'g');
-            groupElement.id = layer.id;
-            svgDoc.documentElement.appendChild(groupElement);
+        if (layer.keyframes.length === 0) {
+          return;
+        }
+        
+        const className = getClassName(layer.name);
+        
+        const element = svgDoc.getElementById(layer.id);
+        if (element) {
+          const currentClass = element.getAttribute('class') || '';
+          if (!currentClass.includes(className)) {
+            element.setAttribute('class', currentClass ? `${currentClass} ${className}` : className);
           }
           
-          // Apply class to the group
-          groupElement.setAttribute('class', layer.name);
-          
-          // Process children
-          if (layer.children) {
-            applyClasses(layer.children);
+          if (layer.keyframes.length > 0) {
+            const sortedKeyframes = [...layer.keyframes].sort((a, b) => a.time - b.time);
             
-            // Move children into the group
-            layer.children.forEach(child => {
-              const childElement = svgDoc.querySelector(`[id="${child.id}"]`);
-              if (childElement) {
-                groupElement?.appendChild(childElement);
-              }
-            });
+            const animationName = `anim-${className}`;
+            
+            const keyframeCSS = generateKeyframeCSS(animationName, sortedKeyframes, timeline.duration);
+            
+            cssString += `.${className} {\n`;
+            cssString += `  animation: ${animationName} ${timeline.duration / 1000}s linear infinite;\n`;
+            
+            if (sortedKeyframes.some(kf => 'rotate' in kf.properties)) {
+              cssString += `  transform-origin: center;\n`;
+              cssString += `  transform-box: fill-box;\n`;
+            }
+            
+            cssString += `}\n\n`;
+            
+            cssString += keyframeCSS;
+            cssString += '\n';
           }
-        } else {
-          // Find the element
-          const element = svgDoc.querySelector(`[id="${layer.id}"]`);
-          
-          if (element) {
-            // Apply class based on layer name
-            element.setAttribute('class', layer.name);
-          }
+        }
+        
+        if (layer.type === 'group' && layer.children) {
+          processLayers(layer.children);
         }
       });
     };
     
-    applyClasses(svgLayers);
+    processLayers(svgLayers);
     
-    // Generate the style element with animations
-    const styleElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'style');
-    styleElement.textContent = generateCSSAnimations(svgLayers);
-    svgDoc.documentElement.appendChild(styleElement);
+    if (styleElement) {
+      styleElement.textContent = cssString;
+    }
     
-    // Return the serialized SVG
     return new XMLSerializer().serializeToString(svgDoc);
-  };
-
-  const generateCSSAnimations = (layers: SVGLayer[]): string => {
-    let css = '';
-    
-    layers.forEach(layer => {
-      if (layer.keyframes.length > 0) {
-        // Generate keyframes
-        css += `\n@keyframes anim-${layer.name} {\n`;
-        
-        layer.keyframes.forEach(keyframe => {
-          const percentage = (keyframe.time / timeline.duration) * 100;
-          css += `  ${percentage.toFixed(1)}% {\n`;
-          
-          // Add properties
-          Object.entries(keyframe.properties).forEach(([key, value]) => {
-            if (value !== undefined) {
-              // Convert camelCase to kebab-case for CSS
-              const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-              css += `    ${cssKey}: ${value};\n`;
-            }
-          });
-          
-          css += '  }\n';
-        });
-        
-        css += '}\n';
-        
-        // Apply animation to the element
-        css += `.${layer.name} {\n`;
-        css += `  animation: anim-${layer.name} ${timeline.duration / 1000}s linear forwards;\n`;
-        css += '}\n';
-      }
-      
-      // Process children if this is a group
-      if (layer.type === 'group' && layer.children) {
-        css += generateCSSAnimations(layer.children);
-      }
-    });
-    
-    return css;
   };
 
   const togglePlayback = () => {
