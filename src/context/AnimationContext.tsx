@@ -1,3 +1,4 @@
+
 import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { parsePathElements } from '../utils/svgParser';
 import { generateKeyframeCSS, getClassName } from '../utils/animationUtils';
@@ -319,9 +320,10 @@ export const AnimationProvider = ({ children }: { children: ReactNode }) => {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
     
-    let styleElement = svgDoc.querySelector('style') as SVGStyleElement | null;
+    // Fix the SVGStyleElement vs HTMLStyleElement type issue
+    let styleElement = svgDoc.querySelector('style');
     if (!styleElement) {
-      styleElement = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'style') as SVGStyleElement;
+      styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
       svgDoc.documentElement.insertBefore(styleElement, svgDoc.documentElement.firstChild);
     }
     
